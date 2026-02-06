@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Local environment/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local database/storage leftovers (if any)
+*.local.db
