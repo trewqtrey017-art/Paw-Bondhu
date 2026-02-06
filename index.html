@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paw Bondhu | Lost Pets + Donations</title>
+    <meta
+      name="description"
+      content="Paw Bondhu helps communities report lost or found pets, coordinate reunions, and run trusted pet-care donations."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Bungee&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-noise" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <p class="eyebrow">Community Pet Network</p>
+        <h1>Paw Bondhu</h1>
+      </div>
+
+      <div class="header-controls">
+        <label class="lang-switch">
+          <span data-i18n="languageLabel">Language</span>
+          <select id="languageToggle" aria-label="Language toggle">
+            <option value="en">English</option>
+            <option value="bn">বাংলা</option>
+          </select>
+        </label>
+
+        <div class="data-mode">
+          <span id="dataModeBadge" class="badge">Local DB</span>
+          <button id="switchModeBtn" type="button" class="btn ghost-btn" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+            Switch
+          </button>
+        </div>
+
+        <button id="openProfileBtn" type="button" class="profile-quick-btn btn ghost-btn">
+          <span id="quickProfileAvatar" class="avatar-token sm">PB</span>
+          <span id="quickProfileName" data-i18n="profileBtn">My Profile</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="page">
+      <!-- Smart Hero Section -->
+      <section class="panel hero-panel">
+        <p class="hero-kicker" data-i18n="heroKicker">Fast Recovery First</p>
+        <h2 data-i18n="heroTitle">
+          Report lost pets quickly. Coordinate with community. Reunite faster.
+        </h2>
+        
+        <div class="hero-decision-hub">
+          <button id="heroLostBtn" type="button" class="decision-card lost">
+            <div class="icon">🔍</div>
+            <div class="text">
+              <span class="title" data-i18n="heroLostBtn">Report Lost Pet</span>
+              <span class="subtitle" data-i18n="composerLostHint">I need help finding my pet</span>
+            </div>
+          </button>
+          
+          <button id="heroFoundBtn" type="button" class="decision-card found">
+            <div class="icon">🏠</div>
+            <div class="text">
+              <span class="title" data-i18n="heroFoundBtn">I Found a Pet</span>
+              <span class="subtitle" data-i18n="composerFoundHint">I want to help it get home</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="hero-secondary-actions">
+           <button id="heroDonateBtn" type="button" class="btn ghost-btn">
+            <span data-i18n="heroDonateBtn">Start Donation Campaign</span>
+          </button>
+        </div>
+
+        <p id="summaryLine" class="summary-line">Loading community summary...</p>
+      </section>
+
+      <div id="entryBackdrop" class="entry-backdrop hidden" aria-hidden="true"></div>
+
+      <section class="layout">
+        <!-- Unified Entry Panel -->
+        <section
+          id="entrySection"
+          class="panel entry-panel hidden-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="entryDialogTitle"
+        >
+          <button id="closeEntryBtn" class="btn ghost-btn close-overlay-btn" title="Close">✕</button>
+          <div class="entry-header-row">
+            <div class="section-head compact">
+              <h3 id="entryDialogTitle" data-i18n="entryTitle">Create Post</h3>
+            </div>
+            
+            <div class="entry-tabs" role="tablist" aria-label="Entry tabs">
+              <button
+                id="entryPetTabBtn"
+                class="entry-tab-btn active"
+                type="button"
+                data-entry-tab="pet"
+                aria-selected="true"
+              >
+                <span data-i18n="entryPetTab">Pet Alert</span>
+              </button>
+              <button
+                id="entryDonationTabBtn"
+                class="entry-tab-btn"
+                type="button"
+                data-entry-tab="donation"
+                aria-selected="false"
+              >
+                <span data-i18n="entryDonationTab">Donation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pet Wizard Form -->
+	          <div id="petEntryPane" class="entry-pane">
+	            <div class="composer-switch" role="tablist" aria-label="Case type">
+              <button
+                id="composerLostBtn"
+                class="mode-btn active"
+                type="button"
+                role="tab"
+                data-mode="lost"
+              >
+                <span data-i18n="lostMode">Lost Pet</span>
+              </button>
+              <button
+                id="composerFoundBtn"
+                class="mode-btn"
+                type="button"
+                role="tab"
+                data-mode="found"
+              >
+                <span data-i18n="foundMode">Found Pet</span>
+	              </button>
+	            </div>
+	            <p id="composerHint" data-i18n="composerLostHint" class="composer-hint">
+	              Share last-seen details and contact so volunteers can help.
+	            </p>
+	            <div class="wizard-shell" aria-live="polite">
+	              <p id="wizardStepLabel" class="wizard-step-label">Step 1 of 3 • Identity</p>
+	              <div class="wizard-progress-track" role="presentation">
+	                <span id="wizardProgressBar" class="wizard-progress-bar"></span>
+	              </div>
+	              <div class="wizard-jump-row" role="tablist" aria-label="Wizard steps">
+	                <button
+	                  type="button"
+	                  class="wizard-jump-btn active"
+	                  data-step-jump="1"
+	                  aria-selected="true"
+	                >
+	                  1 <span data-i18n="wizardStepIdentity">Identity</span>
+	                </button>
+	                <button
+	                  type="button"
+	                  class="wizard-jump-btn"
+	                  data-step-jump="2"
+	                  aria-selected="false"
+	                >
+	                  2 <span data-i18n="wizardStepContext">Location</span>
+	                </button>
+	                <button
+	                  type="button"
+	                  class="wizard-jump-btn"
+	                  data-step-jump="3"
+	                  aria-selected="false"
+	                >
+	                  3 <span data-i18n="wizardStepContact">Contact</span>
+	                </button>
+	              </div>
+	            </div>
+
+	            <form id="petCaseForm" class="wizard-form">
+              <input id="caseTypeInput" name="caseType" type="hidden" value="lost" />
+              
+              <!-- Step 1: Identity -->
+              <div class="wizard-step active" data-step="1">
+                <h4 class="step-title">1. Who are we looking for?</h4>
+                
+                <label>
+                  <span data-i18n="petNameLabel">Pet Name / Nickname</span>
+                  <input name="petName" type="text" required maxlength="60" placeholder="e.g. Bruno" />
+                </label>
+
+                <div class="visual-selector">
+                  <span class="label" data-i18n="speciesLabel">Species</span>
+                  <div class="tile-grid">
+                    <label class="tile-option">
+                      <input type="radio" name="species" value="Dog" checked>
+                      <span class="tile-content">🐕 Dog</span>
+                    </label>
+                    <label class="tile-option">
+                      <input type="radio" name="species" value="Cat">
+                      <span class="tile-content">🐈 Cat</span>
+                    </label>
+                    <label class="tile-option">
+                      <input type="radio" name="species" value="Bird">
+                      <span class="tile-content">🦜 Bird</span>
+                    </label>
+                    <label class="tile-option">
+                      <input type="radio" name="species" value="Other">
+                      <span class="tile-content">Other</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="upload-field" data-upload-kind="pet">
+                  <label>
+                    <span data-i18n="photoLabel">Photo (required)</span>
+                    <input id="petPhotoFileInput" name="photoFile" type="file" accept="image/*" />
+                  </label>
+                  <label>
+                    <span data-i18n="photoUrlLabel">Image URL</span>
+                    <input
+                      id="petPhotoUrlInput"
+                      name="photoUrl"
+                      type="url"
+                      required
+                      placeholder="https://..."
+                    />
+                  </label>
+                  <p id="petPhotoStatus" class="field-meta upload-status">Upload a file or paste an image URL.</p>
+                  <p id="petPhotoError" class="field-error" aria-live="polite"></p>
+                  <img id="petPhotoPreview" class="upload-preview hidden" alt="Pet photo preview" />
+                </div>
+
+                <div class="step-actions">
+                   <button type="button" class="btn primary-btn next-step-btn">Next: Location</button>
+                </div>
+              </div>
+
+              <!-- Step 2: Context -->
+              <div class="wizard-step" data-step="2">
+                <h4 class="step-title">2. Where & When?</h4>
+
+                <label>
+                  <span data-i18n="locationLabel">Area (last seen or found)</span>
+                  <div class="input-with-action">
+                    <input
+                      name="locationText"
+                      type="text"
+                      required
+                      maxlength="100"
+                      placeholder="e.g. Banani, Dhaka"
+                    />
+                    <button type="button" id="autoLocationBtn" class="btn ghost-btn icon-only" title="Use my location">📍</button>
+                  </div>
+                </label>
+
+                <label>
+                  <span data-i18n="dateLabel">Date</span>
+                  <input name="eventDate" type="date" required />
+                </label>
+
+                <label class="full">
+                  <span data-i18n="descriptionLabel">Description</span>
+                  <textarea
+                    id="petDescriptionInput"
+                    name="description"
+                    required
+                    maxlength="500"
+                    placeholder="Color, markings, collar details..."
+                  ></textarea>
+                </label>
+                <p class="field-meta">
+                  <span id="petDescriptionCount" class="char-count">0/500</span>
+                </p>
+                
+                <div class="step-actions">
+                   <button type="button" class="btn ghost-btn prev-step-btn">Back</button>
+                   <button type="button" class="btn primary-btn next-step-btn">Next: Contact</button>
+                </div>
+              </div>
+
+              <!-- Step 3: Contact -->
+              <div class="wizard-step" data-step="3">
+                 <h4 class="step-title">3. Contact & Urgency</h4>
+                 
+                 <label>
+                  <span data-i18n="contactLabel">Contact Info</span>
+                  <input
+                    name="contact"
+                    type="text"
+                    required
+                    maxlength="80"
+                    placeholder="Phone / WhatsApp"
+                  />
+                </label>
+
+                <label>
+                  <span data-i18n="urgencyLabel">Urgency</span>
+                  <select name="urgency" required>
+                    <option value="Critical">Critical (Immediate danger)</option>
+                    <option value="High" selected>High</option>
+                    <option value="Moderate">Moderate</option>
+                  </select>
+                </label>
+
+                <label id="rewardField">
+                  <span data-i18n="rewardLabel">Reward (optional)</span>
+                  <input name="rewardAmount" type="number" min="0" step="1" placeholder="Amount in BDT" />
+                </label>
+
+                <div class="step-actions">
+                   <button type="button" class="btn ghost-btn prev-step-btn">Back</button>
+                   <button id="petCaseSubmitBtn" type="submit" class="btn primary-btn full-width">
+                     Post Alert
+                   </button>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Donation Form (Standard) -->
+          <div id="donationEntryPane" class="entry-pane hidden">
+            <div class="section-head compact">
+              <h4 data-i18n="donationFormTitle">Create Campaign</h4>
+            </div>
+
+            <form id="donationForm" class="form-grid donation-form">
+              <label>
+                <span data-i18n="campaignNameLabel">Campaign Name</span>
+                <input name="campaignTitle" type="text" required maxlength="90" />
+              </label>
+
+              <label>
+                <span data-i18n="beneficiaryLabel">Beneficiary</span>
+                <input name="beneficiary" type="text" required maxlength="90" />
+              </label>
+
+              <label>
+                <span data-i18n="goalLabel">Goal Amount</span>
+                <input name="goalAmount" type="number" min="1" required />
+              </label>
+
+              <label>
+                <span data-i18n="donationUrgencyLabel">Urgency</span>
+                <select name="urgency" required>
+                  <option value="Critical">Critical</option>
+                  <option value="High">High</option>
+                  <option value="Moderate">Moderate</option>
+                </select>
+              </label>
+
+              <label class="full">
+                <span data-i18n="contactLabel">Contact</span>
+                <input name="contact" type="text" required maxlength="80" />
+              </label>
+
+              <div class="upload-field full" data-upload-kind="donation">
+                <label>
+                  <span data-i18n="campaignImageLabel">Campaign Image (required)</span>
+                  <input id="donationPhotoFileInput" name="photoFile" type="file" accept="image/*" />
+                </label>
+                <label>
+                  <span data-i18n="photoUrlLabel">Image URL</span>
+                  <input
+                    id="donationPhotoUrlInput"
+                    name="photoUrl"
+                    type="url"
+                    required
+                    placeholder="https://..."
+                  />
+                </label>
+                <p id="donationPhotoStatus" class="field-meta upload-status">Upload a file or paste an image URL.</p>
+                <p id="donationPhotoError" class="field-error" aria-live="polite"></p>
+                <img id="donationPhotoPreview" class="upload-preview hidden" alt="Donation photo preview" />
+              </div>
+
+              <label class="full">
+                <span data-i18n="facebookUrlLabel">Facebook Post URL (required for trust)</span>
+                <input
+                  id="facebookPostUrlInput"
+                  name="facebookPostUrl"
+                  type="url"
+                  required
+                  placeholder="https://www.facebook.com/..."
+                />
+              </label>
+
+              <p id="facebookUrlError" class="field-error" aria-live="polite"></p>
+
+              <label class="full">
+                <span data-i18n="whyNeededLabel">Why support is needed</span>
+                <textarea
+                  id="donationDescriptionInput"
+                  name="description"
+                  required
+                  maxlength="500"
+                  placeholder="Medical bill, surgery cost, food support..."
+                ></textarea>
+              </label>
+              <p class="field-meta">
+                <span id="donationDescriptionCount" class="char-count">0/500</span>
+              </p>
+
+              <button id="donationSubmitBtn" type="submit" class="btn primary-btn">
+                Create Campaign
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Board Section -->
+        <section class="panel board-panel">
+          <div class="board-header-row">
+            <div class="section-head">
+              <h3 data-i18n="boardTitle">Community Board</h3>
+            </div>
+  
+            <div class="board-tabs" role="tablist" aria-label="Board tabs">
+              <button
+                id="boardAlertsTabBtn"
+                class="board-tab-btn active"
+                type="button"
+                data-board-tab="alerts"
+                aria-selected="true"
+              >
+                <span data-i18n="boardAlertsTab">Alerts</span>
+              </button>
+              <button
+                id="boardDonationsTabBtn"
+                class="board-tab-btn"
+                type="button"
+                data-board-tab="donations"
+                aria-selected="false"
+              >
+                <span data-i18n="boardDonationsTab">Donations</span>
+              </button>
+            </div>
+          </div>
+
+	          <div id="alertsBoardPane" class="board-pane">
+	            <div class="section-head compact">
+	              <h4 id="feedTitle" data-i18n="feedTitleUrgent">Urgent Lost Alerts</h4>
+	            </div>
+	            <div class="search-filter-row">
+	              <input type="text" id="caseSearchInput" class="search-input" placeholder="Search by name, breed, or location..." />
+	            </div>
+            <div class="filter-row" role="tablist" aria-label="Feed filters">
+              <button class="filter-btn active" type="button" data-filter="urgent">
+                🔥 <span data-i18n="filterUrgent">Urgent Lost</span>
+              </button>
+              <button class="filter-btn" type="button" data-filter="found">
+                🏠 <span data-i18n="filterFound">Recently Found</span>
+              </button>
+              <button class="filter-btn" type="button" data-filter="reunited">
+                🎉 <span data-i18n="filterReunited">Reunited</span>
+              </button>
+              <button id="refreshCasesBtn" type="button" class="btn ghost-btn icon-only" style="margin-left: auto">
+                🔄
+              </button>
+            </div>
+
+            <div id="caseList" class="card-list"></div>
+            <button id="loadMoreCasesBtn" type="button" class="btn ghost-btn load-more">
+              Load More
+            </button>
+          </div>
+
+          <div id="donationsBoardPane" class="board-pane hidden">
+            <div class="search-filter-row">
+              <input type="text" id="donationSearchInput" class="search-input" placeholder="Search campaigns..." />
+            </div>
+            <div class="list-head">
+              <h4 data-i18n="campaignFeedTitle">Campaign Feed</h4>
+              <button id="refreshDonationsBtn" type="button" class="btn ghost-btn icon-only">
+                🔄
+              </button>
+            </div>
+            <div id="donationList" class="card-list"></div>
+            <button id="loadMoreDonationsBtn" type="button" class="btn ghost-btn load-more">
+              Load More
+            </button>
+          </div>
+        </section>
+
+        <!-- Clinic Utility -->
+        <aside class="panel clinic-panel">
+          <div class="section-head compact">
+            <h3 data-i18n="clinicTitle">Nearby Care</h3>
+          </div>
+
+          <form id="clinicSearchForm" class="clinic-form">
+            <div class="clinic-search-box">
+               <input
+                name="placeQuery"
+                type="text"
+                maxlength="80"
+                placeholder="Area name..."
+              />
+              <button id="useLocationBtn" type="button" class="btn ghost-btn icon-only" title="Use GPS">📍</button>
+            </div>
+            
+            <div class="clinic-controls">
+                <select name="radius" id="radiusSelect">
+                  <option value="2000">2 km</option>
+                  <option value="5000" selected>5 km</option>
+                  <option value="10000">10 km</option>
+                </select>
+                <button type="submit" class="btn secondary-btn">
+                  <span data-i18n="findCareBtn">Find</span>
+                </button>
+            </div>
+          </form>
+
+          <div id="clinicStatus" class="status">Ready to search.</div>
+          <div id="clinicResults" class="clinic-results"></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p data-i18n="footerText">Community-powered pet recovery and care.</p>
+    </footer>
+
+    <div id="detailBackdrop" class="detail-backdrop hidden" aria-hidden="true"></div>
+    <section
+      id="detailModal"
+      class="detail-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="detailModalTitle"
+    >
+      <button id="closeDetailBtn" type="button" class="btn ghost-btn close-detail-btn" aria-label="Close window">
+        ✕
+      </button>
+      <div id="detailContent"></div>
+    </section>
+
+    <div id="profileBackdrop" class="profile-backdrop hidden" aria-hidden="true"></div>
+    <section
+      id="profileModal"
+      class="profile-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profileModalTitle"
+    >
+      <button id="closeProfileBtn" type="button" class="btn ghost-btn close-profile-btn" aria-label="Close profile">
+        ✕
+      </button>
+      <div class="profile-modal-head">
+        <h3 id="profileModalTitle" data-i18n="profileTitle">Set Your Profile</h3>
+        <p data-i18n="profileSubtitle">Your profile will be used for posts and comments.</p>
+      </div>
+      <form id="profileForm" class="profile-form">
+        <label>
+          <span data-i18n="profileNameLabel">Display Name</span>
+          <input name="displayName" type="text" required maxlength="40" placeholder="e.g. Rafi" />
+        </label>
+        <label>
+          <span data-i18n="profileContactLabel">Primary Contact</span>
+          <input name="contact" type="text" required maxlength="80" placeholder="Phone / WhatsApp / Facebook" />
+        </label>
+        <label>
+          <span data-i18n="profileAreaLabel">City / Area</span>
+          <input name="area" type="text" maxlength="80" placeholder="e.g. Dhanmondi, Dhaka" />
+        </label>
+        <label>
+          <span data-i18n="profileAvatarLabel">Avatar URL (optional)</span>
+          <input name="avatarUrl" type="url" maxlength="300" placeholder="https://..." />
+        </label>
+        <label class="full">
+          <span data-i18n="profileBioLabel">Short Bio (optional)</span>
+          <textarea name="bio" maxlength="180" placeholder="Pet parent, rescuer, volunteer..."></textarea>
+        </label>
+        <button id="saveProfileBtn" type="submit" class="btn primary-btn">
+          <span data-i18n="saveProfileBtn">Save Profile</span>
+        </button>
+      </form>
+    </section>
+
+    <script src="firebase-config.js?v=20260206-1"></script>
+    <script src="image-upload-config.js?v=20260206-2"></script>
+    <script type="module" src="app.js?v=20260206-2"></script>
+  </body>
+</html>
